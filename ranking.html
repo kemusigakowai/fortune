@@ -21,6 +21,8 @@
 
     * { box-sizing: border-box; }
 
+    [hidden] { display: none !important; }
+
     body {
       margin: 0;
       min-width: 320px;
@@ -47,7 +49,7 @@
       mask-image: linear-gradient(to bottom, black, transparent 75%);
     }
 
-    button, input { font: inherit; }
+    button, input, select { font: inherit; }
 
     .shell {
       width: min(1180px, calc(100% - 32px));
@@ -134,10 +136,11 @@
     .search, .filter-select {
       display: inline-flex;
       align-items: center;
-      min-height: 43px;
+      min-height: 54px;
       border: 1px solid var(--line);
-      border-radius: 13px;
-      background: rgba(7, 15, 28, .52);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(12, 25, 44, .9), rgba(7, 15, 28, .7));
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
     }
 
     .search {
@@ -145,6 +148,11 @@
       gap: 8px;
       padding: 0 13px;
       color: var(--muted);
+    }
+
+    .search:focus-within {
+      border-color: rgba(98, 230, 237, .5);
+      box-shadow: 0 0 0 3px rgba(98, 230, 237, .09);
     }
 
     .search input {
@@ -157,28 +165,104 @@
     }
 
     .filter-select {
-      flex: 0 1 150px;
-      gap: 8px;
-      padding: 0 12px;
+      position: relative;
+      flex: 0 1 172px;
+      gap: 11px;
+      padding: 7px 40px 7px 12px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .filter-select:hover {
+      border-color: rgba(169, 139, 255, .42);
+      transform: translateY(-1px);
+    }
+
+    .filter-select:focus-within {
+      border-color: rgba(98, 230, 237, .62);
+      box-shadow: 0 0 0 3px rgba(98, 230, 237, .1), 0 12px 28px rgba(0, 0, 0, .2);
+    }
+
+    .filter-select.has-value {
+      border-color: rgba(98, 230, 237, .32);
+      background: linear-gradient(145deg, rgba(22, 48, 68, .96), rgba(13, 29, 48, .86));
+    }
+
+    .filter-icon {
+      flex: 0 0 auto;
+      width: 19px;
+      height: 19px;
+      color: var(--violet);
+      pointer-events: none;
+      transition: color .18s ease;
+    }
+
+    .filter-select.has-value .filter-icon,
+    .filter-select:focus-within .filter-icon { color: var(--cyan); }
+
+    .filter-body {
+      display: grid;
+      flex: 1;
+      min-width: 0;
+      pointer-events: none;
+    }
+
+    .filter-label {
       color: var(--muted);
       font-size: 11px;
       font-weight: 800;
-      letter-spacing: .08em;
+      letter-spacing: .12em;
+      line-height: 1.2;
       text-transform: uppercase;
     }
 
-    .filter-select select {
-      flex: 1;
-      border: 0;
-      outline: 0;
+    .filter-value {
+      margin-top: 1px;
+      overflow: hidden;
       color: var(--ink);
-      background: transparent;
-      cursor: pointer;
-      font-size: 13px;
-      text-transform: none;
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.3;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .filter-select option { color: #08131d; }
+    .filter-select select {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0;
+    }
+
+    .filter-select option {
+      color: var(--ink);
+      background: #142640;
+    }
+
+    .filter-chevron {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      pointer-events: none;
+      transform: translateY(-70%) rotate(45deg);
+      transition: color .18s ease, transform .18s ease;
+    }
+
+    .filter-select:focus-within .filter-chevron {
+      color: var(--cyan);
+      transform: translateY(-25%) rotate(225deg);
+    }
 
     .content { margin-top: 22px; }
 
@@ -436,16 +520,26 @@
           <input id="search" type="search" placeholder="Search birthday or fortune">
         </label>
         <label class="filter-select">
-          <span>Month</span>
+          <svg class="filter-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3v3m10-3v3M4.5 9.5h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="filter-body">
+            <span class="filter-label">Month</span>
+            <span class="filter-value">All months</span>
+          </span>
           <select id="month-filter" aria-label="Filter by month">
-            <option value="">All</option>
+            <option value="">All months</option>
           </select>
+          <span class="filter-chevron" aria-hidden="true"></span>
         </label>
         <label class="filter-select">
-          <span>Day</span>
+          <svg class="filter-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3v3m10-3v3M4.5 9.5h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 14h3m2 0h3m-8 3h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="filter-body">
+            <span class="filter-label">Day</span>
+            <span class="filter-value">All days</span>
+          </span>
           <select id="day-filter" aria-label="Filter by day">
-            <option value="">All</option>
+            <option value="">All days</option>
           </select>
+          <span class="filter-chevron" aria-hidden="true"></span>
         </label>
       </div>
     </header>
@@ -553,6 +647,12 @@
         }
       }
 
+      function updateFilterControl(select, value) {
+        const control = select.closest('.filter-select');
+        control.classList.toggle('has-value', Boolean(value));
+        control.querySelector('.filter-value').textContent = select.selectedOptions[0].textContent;
+      }
+
       function matches(entry) {
         const normalized = state.query.replace(/\s|\//g, '').toLowerCase();
         const matchesQuery = !state.query || entry.birthday.includes(normalized) ||
@@ -618,10 +718,12 @@
       });
       $('month-filter').addEventListener('change', (event) => {
         state.month = event.target.value;
+        updateFilterControl(event.target, state.month);
         if (state.entries.length) render();
       });
       $('day-filter').addEventListener('change', (event) => {
         state.day = event.target.value;
+        updateFilterControl(event.target, state.day);
         if (state.entries.length) render();
       });
 
