@@ -44,11 +44,10 @@ Create or display today's ranking for all 366 birthdays with `-r` or
 luck -r
 ```
 
-The ranking is saved in `ranking.txt`, and `ranking-data.js` is generated for
-the local HTML viewer. When an existing ranking is loaded, its first line is
-treated as informational and is not validated. To display the normal result
-and the selected birthday's rank without printing the full table, provide the
-birthday:
+The ranking is saved in `ranking.txt`. When an existing ranking is loaded, its
+first line is treated as informational and is not validated. To display the
+normal result and the selected birthday's rank without printing the full table,
+provide the birthday:
 
 ```sh
 luck 0928 -r
@@ -65,14 +64,14 @@ The file starts with the generation date, followed by the ranking table:
 Equal attempt counts receive the same rank. The next rank includes all tied
 entries; for example, `1, 1, 2, 2, 4` becomes `1, 1, 3, 3, 5`.
 
-Open `ranking.html` to view the ranking. Running `luck -r` updates both data
-files. The HTML loads `ranking-data.js` directly and provides text, month, and
-day filters. It does not provide a file picker for `ranking.txt`.
+Open `ranking.html` through a web server to view the ranking. Running `luck -r`
+updates the data file. The HTML automatically fetches `ranking.txt` and provides
+text, month, and day filters. It does not provide a file picker.
 
 When this directory is served by Apache, `.htaccess` exposes `ranking.html`
-and its generated `ranking-data.js` asset only. Other files, including
-`ranking.txt`, are denied. The file grants those two names explicitly so a
-directory-level access policy does not accidentally deny the page itself.
+and its generated `ranking.txt` data only. Other files are denied. The file
+grants those two names explicitly so a directory-level access policy does not
+accidentally deny the page itself.
 The page should be opened as `/fortune/ranking.html`; the hosting configuration
 must allow the legacy host-access directives used here (`AllowOverride Limit`).
 
