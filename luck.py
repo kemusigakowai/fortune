@@ -143,6 +143,7 @@ def save_ranking(generated_date, ranking, ranking_file=None):
         file_descriptor, temporary_name = tempfile.mkstemp(
             prefix='.ranking-', dir=str(ranking_file.parent))
         with os.fdopen(file_descriptor, 'w', encoding='utf-8') as output:
+            os.fchmod(output.fileno(), 0o644)
             output.write(ranking_text(generated_date, ranking))
         os.replace(temporary_name, str(ranking_file))
         temporary_name = None
@@ -159,6 +160,7 @@ def save_browser_ranking(generated_date, ranking):
         json.dumps(ranking_text(generated_date, ranking), ensure_ascii=False))
     try:
         if RANKING_BROWSER_FILE.read_text(encoding='utf-8') == browser_text:
+            os.chmod(RANKING_BROWSER_FILE, 0o644)
             return
     except (OSError, UnicodeError):
         pass
@@ -168,6 +170,7 @@ def save_browser_ranking(generated_date, ranking):
         file_descriptor, temporary_name = tempfile.mkstemp(
             prefix='.ranking-data-', dir=str(RANKING_BROWSER_FILE.parent))
         with os.fdopen(file_descriptor, 'w', encoding='utf-8') as output:
+            os.fchmod(output.fileno(), 0o644)
             output.write(browser_text)
         os.replace(temporary_name, str(RANKING_BROWSER_FILE))
         temporary_name = None
