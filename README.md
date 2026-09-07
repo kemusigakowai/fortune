@@ -78,6 +78,18 @@ It runs `luck --ranking` at 00:00:01 each day and writes output to
 `~/.local/state/luck/ranking.log`. Because cron schedules jobs by the minute,
 the job starts at 00:00:00 and waits one second before running.
 
+If the server does not run cron, keep the aligned ranking loop in a detached
+tmux session:
+
+```sh
+tmux new -s luck-ranking
+sh ./ranking_loop.sh
+```
+
+Detach with `Ctrl-b d`. The loop checks at 00:00:01, 06:00:01, 12:00:01,
+and 18:00:01, and runs `luck --ranking` only when the date differs from the
+previous execution. Reattach with `tmux attach -t luck-ranking`.
+
 ```sh
 python3 luck_examine.py
 ```
