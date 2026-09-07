@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Luck · Daily Ranking</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #edf5ff;
+      --muted: #8ea2bc;
+      --line: rgba(170, 204, 238, .14);
+      --panel: rgba(17, 31, 52, .82);
+      --panel-strong: #142640;
+      --cyan: #62e6ed;
+      --violet: #a98bff;
+      --gold: #ffd166;
+      --green: #6ee7a8;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .32);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(98, 230, 237, .16), transparent 30rem),
+        radial-gradient(circle at 94% 8%, rgba(169, 139, 255, .17), transparent 28rem),
+        #09111e;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      content: "";
+      opacity: .18;
+      background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: linear-gradient(to bottom, black, transparent 75%);
+    }
+
+    button, input { font: inherit; }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 70px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(26px, 5vw, 58px);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: linear-gradient(135deg, rgba(21, 42, 70, .9), rgba(14, 24, 42, .82));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      position: absolute;
+      right: -80px;
+      bottom: -130px;
+      width: 330px;
+      height: 330px;
+      border: 1px solid rgba(98, 230, 237, .18);
+      border-radius: 50%;
+      box-shadow: 0 0 0 28px rgba(98, 230, 237, .035), 0 0 0 56px rgba(98, 230, 237, .025);
+      content: "";
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .2em;
+    }
+
+    .date-badge {
+      float: right;
+      padding: 7px 12px;
+      border: 1px solid rgba(255, 209, 102, .25);
+      border-radius: 999px;
+      color: var(--gold);
+      background: rgba(255, 209, 102, .08);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    h1 {
+      max-width: 660px;
+      margin: 20px 0 10px;
+      font-size: clamp(38px, 7vw, 76px);
+      font-weight: 800;
+      letter-spacing: -.065em;
+      line-height: .98;
+    }
+
+    h1 em {
+      color: var(--cyan);
+      font-style: normal;
+    }
+
+    .intro {
+      max-width: 570px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .toolbar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .file-button, .refresh-button, .search {
+      display: inline-flex;
+      align-items: center;
+      min-height: 43px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(7, 15, 28, .52);
+    }
+
+    .file-button {
+      padding: 0 16px;
+      color: #08131d;
+      background: var(--cyan);
+      border-color: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .file-button input { display: none; }
+
+    .refresh-button {
+      padding: 0 14px;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .refresh-button:hover { border-color: var(--cyan); }
+
+    .search {
+      flex: 1 1 210px;
+      gap: 8px;
+      padding: 0 13px;
+      color: var(--muted);
+    }
+
+    .search input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      color: var(--ink);
+      background: transparent;
+      font-size: 13px;
+    }
+
+    .status {
+      min-height: 20px;
+      margin-top: 15px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status strong { color: var(--green); }
+
+    .content { margin-top: 22px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .stat, .panel {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--panel);
+      box-shadow: 0 12px 38px rgba(0, 0, 0, .12);
+    }
+
+    .stat { padding: 19px 20px; }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 5px;
+      color: var(--ink);
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: -.04em;
+    }
+
+    .stat-note {
+      display: block;
+      min-height: 18px;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 38px 2px 14px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -.03em;
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .podium {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .podium-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 160px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(25, 45, 72, .9), rgba(16, 29, 49, .82));
+    }
+
+    .podium-card::after {
+      position: absolute;
+      right: -32px;
+      bottom: -40px;
+      width: 130px;
+      height: 130px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .podium-card.first { border-color: rgba(255, 209, 102, .45); }
+    .podium-card.second { border-color: rgba(192, 216, 237, .3); }
+    .podium-card.third { border-color: rgba(205, 145, 100, .32); }
+
+    .podium-rank {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .1em;
+    }
+
+    .podium-birthday {
+      display: block;
+      margin-top: 18px;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -.06em;
+    }
+
+    .podium-meta { color: var(--muted); font-size: 12px; }
+
+    .table-panel { overflow: hidden; }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      min-width: 650px;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      padding: 15px 22px;
+      color: var(--muted);
+      background: rgba(5, 12, 23, .38);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 13px 22px;
+      border-top: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    tbody tr { transition: background .16s ease, transform .16s ease; }
+    tbody tr:hover { background: rgba(98, 230, 237, .055); }
+    tbody tr.selected { background: rgba(98, 230, 237, .12); }
+
+    .rank {
+      width: 70px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+    }
+
+    .rank.top { color: var(--gold); }
+
+    .birthday-cell {
+      font-weight: 800;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+
+    .fortune {
+      display: inline-flex;
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: #bdeef2;
+      background: rgba(98, 230, 237, .1);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+
+    .fortune.lucky, .fortune.very-lucky, .fortune.extremely-lucky {
+      color: #ffe7a0;
+      background: rgba(255, 209, 102, .11);
+    }
+
+    .fortune.unlucky, .fortune.very-unlucky, .fortune.extremely-unlucky,
+    .fortune.a-bit-unlucky {
+      color: #ffc1bb;
+      background: rgba(255, 112, 102, .1);
+    }
+
+    .attempts-cell { width: 40%; }
+
+    .attempts-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .attempts-number {
+      width: 45px;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .meter {
+      flex: 1;
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+    }
+
+    .meter span {
+      display: block;
+      height: 100%;
+      min-width: 5px;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+    }
+
+    .empty {
+      display: grid;
+      min-height: 260px;
+      place-items: center;
+      padding: 30px;
+      border: 1px dashed rgba(170, 204, 238, .28);
+      border-radius: 22px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty strong { display: block; margin-bottom: 7px; color: var(--ink); }
+
+    @media (max-width: 780px) {
+      .shell { width: min(100% - 20px, 1180px); padding-top: 10px; }
+      .hero { border-radius: 22px; }
+      .date-badge { float: none; display: inline-block; margin-top: 12px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .podium { grid-template-columns: 1fr; }
+      .podium-card { min-height: 125px; }
+      .section-heading { align-items: start; flex-direction: column; }
+    }
+
+    @media (max-width: 430px) {
+      .stats { gap: 8px; }
+      .stat { padding: 14px; }
+      .stat-value { font-size: 22px; }
+      .toolbar { align-items: stretch; flex-direction: column; }
+      .file-button, .refresh-button { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <span class="eyebrow">LUCK / DAILY RANKING</span>
+      <span class="date-badge" id="date-badge">Waiting for ranking.txt</span>
+      <h1>Find your <em>lucky place.</em></h1>
+      <p class="intro">A calm view of every birthday in today's bogo-sort ranking. Search a birthday, compare the attempts, and see where your luck landed.</p>
+      <div class="toolbar">
+        <label class="file-button">Open ranking.txt<input id="file-input" type="file" accept=".txt,text/plain"></label>
+        <button class="refresh-button" id="refresh" type="button">↻ Refresh</button>
+        <label class="search" aria-label="Search ranking">
+          <span>⌕</span>
+          <input id="search" type="search" placeholder="Search birthday or fortune">
+        </label>
+      </div>
+      <div class="status" id="status" aria-live="polite">Trying to load <strong>ranking.txt</strong> from this folder…</div>
+    </header>
+
+    <main class="content" id="content" hidden>
+      <section class="stats" aria-label="Ranking summary">
+        <article class="stat"><span class="stat-label">Entries</span><strong class="stat-value" id="total">—</strong><span class="stat-note">valid birthdays</span></article>
+        <article class="stat"><span class="stat-label">Best day</span><strong class="stat-value" id="best">—</strong><span class="stat-note" id="best-note">fewest attempts</span></article>
+        <article class="stat"><span class="stat-label">Average</span><strong class="stat-value" id="average">—</strong><span class="stat-note">attempts across the field</span></article>
+        <article class="stat"><span class="stat-label">Your rank</span><strong class="stat-value" id="selected-rank">—</strong><span class="stat-note" id="selected-note">type a birthday above</span></article>
+      </section>
+
+      <div class="section-heading">
+        <div><h2>Lucky podium</h2><p>The smallest number of attempts takes the highest place.</p></div>
+        <p id="shown-count"></p>
+      </div>
+      <section class="podium" id="podium" aria-label="Top three ranking entries"></section>
+
+      <div class="section-heading">
+        <div><h2>Full ranking</h2><p>Equal attempt counts keep the same rank.</p></div>
+      </div>
+      <section class="panel table-panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Rank</th><th>Birthday</th><th>Fortune</th><th class="attempts-cell">Number of Attempts</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="empty" hidden><div><strong>No matching birthdays</strong>Try another birthday or fortune label.</div></div>
+      </section>
+    </main>
+
+    <div class="empty" id="load-empty" style="margin-top:22px">
+      <div><strong>Bring your ranking to life</strong>Open this page through a local server for automatic loading, or choose / drop <code>ranking.txt</code> above.</div>
+    </div>
+  </div>
+
+  <script src="ranking-data.js"></script>
+  <script>
+    (() => {
+      'use strict';
+
+      const state = { entries: [], generatedDate: '', query: '' };
+      const $ = (id) => document.getElementById(id);
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (character) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[character]));
+      }
+
+      function parseRanking(text) {
+        const lines = text.replace(/\r/g, '').split('\n').map((line) => line.trim());
+        while (lines.length && !lines[lines.length - 1]) lines.pop();
+        if (lines.length < 3) throw new Error('The ranking file has no data rows.');
+
+        const dateMatch = lines[0].match(/\d{8}/);
+        if (!dateMatch) throw new Error('The generation date could not be read.');
+        const entries = [];
+        for (const line of lines.slice(2)) {
+          if (!line) continue;
+          const fields = line.split(/\s+/);
+          if (fields.length < 4) continue;
+          const rank = Number(fields[0]);
+          const birthday = fields[1];
+          const attempts = Number(fields[fields.length - 1]);
+          const fortune = fields.slice(2, -1).join(' ');
+          if (!Number.isFinite(rank) || !/^\d{4}$/.test(birthday) ||
+              !Number.isFinite(attempts) || !fortune) continue;
+          entries.push({ rank, birthday, fortune, attempts });
+        }
+        if (!entries.length) throw new Error('No ranking rows were found.');
+        return { generatedDate: dateMatch[0], entries };
+      }
+
+      function prettyDate(value) {
+        const year = Number(value.slice(0, 4));
+        const month = Number(value.slice(4, 6));
+        const day = Number(value.slice(6, 8));
+        return new Intl.DateTimeFormat('en-US', {
+          year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC'
+        }).format(new Date(Date.UTC(year, month - 1, day)));
+      }
+
+      function prettyBirthday(value) {
+        return value.slice(0, 2) + ' / ' + value.slice(2);
+      }
+
+      function prettyFortune(value) {
+        return value.replace(/_/g, ' ');
+      }
+
+      function setStatus(message, good = false) {
+        $('status').innerHTML = message;
+        if (good) $('status').innerHTML = '<strong>' + message + '</strong>';
+      }
+
+      function matches(entry, query) {
+        if (!query) return true;
+        const normalized = query.replace(/\s|\//g, '').toLowerCase();
+        return entry.birthday.includes(normalized) ||
+          entry.fortune.replace(/_/g, ' ').toLowerCase().includes(query.toLowerCase());
+      }
+
+      function render() {
+        const entries = state.entries;
+        const filtered = entries.filter((entry) => matches(entry, state.query));
+        const maxAttempts = Math.max(...entries.map((entry) => entry.attempts));
+        const best = Math.min(...entries.map((entry) => entry.attempts));
+        const average = Math.round(entries.reduce((sum, entry) => sum + entry.attempts, 0) / entries.length);
+        const exact = entries.find((entry) => entry.birthday === state.query.replace(/\s|\//g, ''));
+
+        $('date-badge').textContent = prettyDate(state.generatedDate);
+        $('total').textContent = entries.length;
+        $('best').textContent = best;
+        $('best-note').textContent = entries.filter((entry) => entry.attempts === best).length + ' birthday' + (entries.filter((entry) => entry.attempts === best).length === 1 ? '' : 's');
+        $('average').textContent = average;
+        $('selected-rank').textContent = exact ? '#' + exact.rank : '—';
+        $('selected-note').textContent = exact ? prettyBirthday(exact.birthday) + ' · ' + prettyFortune(exact.fortune) : 'type an exact MMDD birthday';
+        $('shown-count').textContent = 'Showing ' + filtered.length + ' of ' + entries.length;
+
+        $('podium').innerHTML = entries.slice(0, 3).map((entry, index) => `
+          <article class="podium-card ${['first', 'second', 'third'][index]}">
+            <span class="podium-rank">#${entry.rank} · ${['GOLD', 'SILVER', 'BRONZE'][index]}</span>
+            <strong class="podium-birthday">${prettyBirthday(entry.birthday)}</strong>
+            <span class="podium-meta">${escapeHtml(prettyFortune(entry.fortune))} · ${entry.attempts} attempts</span>
+          </article>`).join('');
+
+        $('rows').innerHTML = filtered.map((entry) => {
+          const selected = exact && exact.birthday === entry.birthday;
+          const fortuneClass = entry.fortune.replace(/_/g, '-');
+          const width = Math.max(2, Math.round(entry.attempts / maxAttempts * 100));
+          return `<tr class="${selected ? 'selected' : ''}">
+            <td class="rank ${entry.rank <= 3 ? 'top' : ''}">#${entry.rank}</td>
+            <td class="birthday-cell">${prettyBirthday(entry.birthday)}</td>
+            <td><span class="fortune ${escapeHtml(fortuneClass)}">${escapeHtml(prettyFortune(entry.fortune))}</span></td>
+            <td class="attempts-cell"><div class="attempts-line"><span class="attempts-number">${entry.attempts}</span><span class="meter"><span style="width:${width}%"></span></span></div></td>
+          </tr>`;
+        }).join('');
+        $('empty').hidden = filtered.length !== 0;
+      }
+
+      function showRanking(text, source) {
+        const parsed = parseRanking(text);
+        state.generatedDate = parsed.generatedDate;
+        state.entries = parsed.entries;
+        $('content').hidden = false;
+        $('load-empty').hidden = true;
+        setStatus('Loaded ' + parsed.entries.length + ' entries from ' + escapeHtml(source) + '.', true);
+        render();
+      }
+
+      async function loadFromUrl() {
+        try {
+          const response = await fetch('ranking.txt?cache=' + Date.now(), { cache: 'no-store' });
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          showRanking(await response.text(), 'ranking.txt');
+        } catch (error) {
+          if (!state.entries.length) {
+            setStatus('Choose ranking.txt above, or serve this folder with <strong>python3 -m http.server</strong>.');
+          }
+        }
+      }
+
+      $('file-input').addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        try {
+          showRanking(await file.text(), file.name);
+        } catch (error) {
+          setStatus('Could not read that ranking file: ' + escapeHtml(error.message));
+        }
+      });
+
+      $('refresh').addEventListener('click', loadFromUrl);
+      $('search').addEventListener('input', (event) => {
+        state.query = event.target.value.trim();
+        if (state.entries.length) render();
+      });
+      window.addEventListener('dragover', (event) => event.preventDefault());
+      window.addEventListener('drop', async (event) => {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        if (!file) return;
+        try {
+          showRanking(await file.text(), file.name);
+        } catch (error) {
+          setStatus('Could not read that ranking file: ' + escapeHtml(error.message));
+        }
+      });
+
+      if (window.LUCK_RANKING_TEXT) {
+        try {
+          showRanking(window.LUCK_RANKING_TEXT, 'ranking-data.js');
+        } catch (error) {
+          setStatus('Could not read the embedded ranking: ' + escapeHtml(error.message));
+        }
+      }
+      loadFromUrl();
+    })();
+  </script>
+</body>
+</html>
