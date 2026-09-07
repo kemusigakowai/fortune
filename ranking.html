@@ -582,6 +582,7 @@
     (() => {
       'use strict';
 
+      const ATTEMPTS_SCALE_MAX = 600;
       const state = { entries: [], generatedDate: '', query: '', month: '', day: '' };
       const $ = (id) => document.getElementById(id);
 
@@ -665,7 +666,6 @@
       function render() {
         const entries = state.entries;
         const filtered = entries.filter(matches);
-        const maxAttempts = Math.max(...entries.map((entry) => entry.attempts));
         const best = Math.min(...entries.map((entry) => entry.attempts));
         const average = Math.round(entries.reduce((sum, entry) => sum + entry.attempts, 0) / entries.length);
         const exact = entries.find((entry) => entry.birthday === state.query.replace(/\s|\//g, ''));
@@ -689,7 +689,8 @@
         $('rows').innerHTML = filtered.map((entry) => {
           const selected = exact && exact.birthday === entry.birthday;
           const fortuneClass = entry.fortune.replace(/_/g, '-');
-          const width = Math.max(2, Math.round(entry.attempts / maxAttempts * 100));
+          const width = Math.min(100,
+            Math.max(2, Math.round(entry.attempts / ATTEMPTS_SCALE_MAX * 100)));
           return `<tr class="${selected ? 'selected' : ''}">
             <td class="rank ${entry.rank <= 3 ? 'top' : ''}">#${entry.rank}</td>
             <td class="birthday-cell">${prettyBirthday(entry.birthday)}</td>
