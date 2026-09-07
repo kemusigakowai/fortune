@@ -190,8 +190,13 @@ def load_ranking(generated_date, ranking_file=None):
     if len(lines) < 2:
         return None
 
-    # The first line is informational; ranking reuse is determined by the
-    # table contents below rather than by validating its generation date.
+    try:
+        ranking_date = int(lines[0].strip())
+    except ValueError:
+        return None
+    if ranking_date != generated_date:
+        return None
+
     if lines[1].strip() != RANKING_HEADER:
         return None
 

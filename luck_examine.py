@@ -1,80 +1,131 @@
-import numpy as np
 import datetime
-import random as rand
-import argparse
-import sys
+import random
+import secrets
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 
-print('')
+
+class BogoSortExaminer:
+    """Examine how many shuffles bogo sort needs for a range of seeds."""
+
+    def __init__(self, item_count=5, exam_size=10_000, start_seed=None):
+        if item_count < 1:
+            raise ValueError('item_count must be at least 1')
+        if exam_size < 1:
+            raise ValueError('exam_size must be at least 1')
+
+        self.item_count = item_count
+        self.exam_size = exam_size
+        self.start_seed = self._today_in_jst() if start_seed is None else start_seed
+        self.attempt_counts = []
+        self.percentile_attempts = []
+
+    @staticmethod
+    def _today_in_jst():
+        jst = datetime.timezone(datetime.timedelta(hours=9), 'JST')
+        return int(datetime.datetime.now(jst).strftime('%Y%m%d'))
+
+    def _attempts_until_sorted(self, seed):
+        values = list(range(self.item_count))
+        generator = random.Random(seed)
+        attempts = 0
+
+        while True:
+            generator.shuffle(values)
+            attempts += 1
+            if values == sorted(values):
+                return attempts
+
+    def examine(self, progress_interval=10_000):
+        """Run all examinations and return a frequency table by attempt count."""
+        self.attempt_counts = []
+        seed = self.start_seed
+        seed_generator = random.Random(secrets.randbits(256))
+
+        for index in range(self.exam_size):
+            if progress_interval and index % progress_interval == 0:
+                print('examined:', index, 'seeds\r', end='', flush=True)
+
+            random_factor = seed_generator.randint(1, 10)
+            seed += index * random_factor
+            attempts = self._attempts_until_sorted(seed)
+            if attempts >= len(self.attempt_counts):
+                self.attempt_counts.extend(
+                    [0] * (attempts - len(self.attempt_counts) + 1))
+            self.attempt_counts[attempts] += 1
+
+        self.percentile_attempts = []
+        return self.attempt_counts
+
+    def attempts_at_percentile(self, percent):
+        if not self.attempt_counts:
+            raise RuntimeError('examine() must be called first')
+        if not 0 < percent <= 100:
+            raise ValueError('percent must be greater than 0 and at most 100')
+
+        target = percent * 0.01 * self.exam_size
+        cumulative_count = 0
+        for attempts, count in enumerate(self.attempt_counts):
+            cumulative_count += count
+            if cumulative_count >= target:
+                return attempts
+
+        raise RuntimeError('examination results are incomplete')
+
+    def calculate_percentiles(self):
+        self.percentile_attempts = [
+            self.attempts_at_percentile(step / 10)
+            for step in range(1, 1001)
+        ]
+        return self.percentile_attempts
+
+    def save_percentiles(self, output_path='exam_data.txt'):
+        if not self.percentile_attempts:
+            self.calculate_percentiles()
+
+        output_path = Path(output_path)
+        with output_path.open('w', encoding='utf-8') as output:
+            for step, attempts in enumerate(self.percentile_attempts, 1):
+                output.write(f'{step / 10:.1f}% {attempts}\n')
+
+    def plot_percentiles(self):
+        if not self.percentile_attempts:
+            self.calculate_percentiles()
+
+        percentages = [step / 10 for step in range(1, 1001)]
+        plt.plot(self.percentile_attempts, percentages)
+        plt.xlabel('number of attempts')
+        plt.ylabel('possibility (%)')
+        plt.title(
+            f'possibility of succeeding in bogo-sort (N={self.item_count})')
+        plt.show()
+
+    def run(self, output_path='exam_data.txt', progress_interval=10_000):
+        self.examine(progress_interval)
+        self.calculate_percentiles()
+        self.save_percentiles(output_path)
+        self.plot_percentiles()
 
 
-# global variables -------------------------------------------------
-t_delta = datetime.timedelta(hours=9)
-JST = datetime.timezone(t_delta, 'JST')
-now = int(datetime.datetime.now(JST).strftime('%Y%m%d'))
+def main():
+    item_count = 6
+    exam_size = 100_000
+    start_seed = 2026  # None means today's date in JST.
+    progress_interval = 1_000
+    output_path = 'exam_data.txt'
 
-N = 5
-list_to_sort = np.arange(N)
-rand.seed(now)
-iteration = 0
+    print('')
+    examiner = BogoSortExaminer(
+        item_count=item_count,
+        exam_size=exam_size,
+        start_seed=start_seed,
+    )
+    examiner.run(
+        output_path=output_path,
+        progress_interval=progress_interval,
+    )
 
-exam_size = 100000
-data = []
-for i in range(10000):
-    data.append(0)
 
-# prepare functions --------------------------------------------
-
-def shuffle():
-    global list_to_sort, iteration
-    rand.shuffle(list_to_sort)
-    iteration += 1
-
-def is_sorted():
-    for i in range(N-1):
-        if list_to_sort[i] > list_to_sort[i+1]:
-            return False
-    return True
-
-def reset():
-    global list_to_sort, iteration
-    list_to_sort = np.arange(N).copy()
-    iteration = 0
-
-# main ----------------------------------------------------------
-
-for i in range(exam_size):
-    if i%10000 == 0:
-        print('examined:', i, 'seeds')
-    now += i
-    rand.seed(now)
-    shuffle()
-    while True:
-        if is_sorted():
-            break
-        shuffle()
-    data[iteration] += 1
-    reset()
-
-# file output -------------------------------------------------
-    
-def exam_percent(percent):
-    sum = 0
-    for i in range(len(data)):
-        count = data[i]
-        sum += count
-        if sum > percent * 0.01 * exam_size:
-            return i
-
-exam_list = []
-percent_list = np.arange(1, 101)
-with open('exam_data.txt', 'w') as file:
-    for percent in percent_list:
-        exam_list.append(exam_percent(percent))
-        file.write(f'{percent}% {exam_percent(percent)}\n')
-
-plt.plot(exam_list, percent_list)
-plt.xlabel('number of attempts')
-plt.ylabel('possibility (%)')
-plt.title('possibility of succeeding in bogo-sort (N=5)')
-plt.show()
+if __name__ == '__main__':
+    main()
