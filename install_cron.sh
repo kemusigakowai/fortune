@@ -40,5 +40,6 @@ cron_entry="0 0 * * * sleep 1; \"$luck_command\" --ranking >> \"$log_file\" 2>&1
     printf '%s\n' "$cron_entry"
 } | crontab -
 
+
 printf 'Installed daily ranking cron job: 00:00:01\n'
 printf 'Log file: %s\n' "$log_file"
