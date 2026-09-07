@@ -45,9 +45,10 @@ luck -r
 ```
 
 The ranking is saved in `ranking.txt`, and `ranking-data.js` is generated for
-the local HTML viewer. A ranking generated today is reused; an older ranking
-is replaced. To display the normal result and the selected birthday's rank
-without printing the full table, provide the birthday:
+the local HTML viewer. When an existing ranking is loaded, its first line is
+treated as informational and is not validated. To display the normal result
+and the selected birthday's rank without printing the full table, provide the
+birthday:
 
 ```sh
 luck 0928 -r
@@ -67,6 +68,13 @@ entries; for example, `1, 1, 2, 2, 4` becomes `1, 1, 3, 3, 5`.
 Open `ranking.html` to view the ranking. Running `luck -r` updates both data
 files. The HTML loads `ranking-data.js` when opened directly as a `file://`
 page; if that file is unavailable, choose or drop `ranking.txt` into the page.
+
+When this directory is served by Apache, `.htaccess` exposes `ranking.html`
+and its generated `ranking-data.js` asset only. Other files, including
+`ranking.txt`, are denied. The file grants those two names explicitly so a
+directory-level access policy does not accidentally deny the page itself.
+The page should be opened as `/fortune/ranking.html`; the hosting configuration
+must allow the legacy host-access directives used here (`AllowOverride Limit`).
 
 Install a daily cron job with:
 

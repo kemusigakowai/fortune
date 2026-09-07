@@ -190,15 +190,8 @@ def load_ranking(generated_date, ranking_file=None):
     if len(lines) < 2:
         return None
 
-    date_text = lines[0].strip()
-    if date_text.startswith('生成年月日'):
-        date_text = date_text[len('生成年月日'):].strip()
-    try:
-        if int(date_text) != generated_date:
-            return None
-    except ValueError:
-        return None
-
+    # The first line is informational; ranking reuse is determined by the
+    # table contents below rather than by validating its generation date.
     if lines[1].strip() != RANKING_HEADER:
         return None
 
