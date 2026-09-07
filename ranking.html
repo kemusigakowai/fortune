@@ -432,7 +432,8 @@
       text-transform: capitalize;
     }
 
-    .fortune.lucky, .fortune.very-lucky, .fortune.extremely-lucky {
+    .fortune.a-bit-lucky, .fortune.lucky, .fortune.very-lucky,
+    .fortune.extremely-lucky {
       color: #ffe7a0;
       background: rgba(255, 209, 102, .11);
     }
@@ -513,7 +514,7 @@
       <span class="eyebrow">LUCK / DAILY RANKING</span>
       <span class="date-badge" id="date-badge">Waiting for ranking data</span>
       <h1>Find your <em>lucky place.</em></h1>
-      <p class="intro">A calm view of every birthday in today's bogo-sort ranking.<span class="intro-break">Search a birthday, compare the attempts, and see where your luck landed.</span></p>
+      <p class="intro">A calm view of every birthday in today's Bogo-Sort (N=6) ranking.<span class="intro-break">Search a birthday, compare the attempts, and see where your luck landed.</span></p>
       <div class="toolbar">
         <label class="search" aria-label="Search ranking">
           <span>⌕</span>
@@ -582,7 +583,7 @@
     (() => {
       'use strict';
 
-      const ATTEMPTS_SCALE_MAX = 600;
+      const ATTEMPTS_SCALE_MAX = 5000;
       const state = { entries: [], generatedDate: '', query: '', month: '', day: '' };
       const $ = (id) => document.getElementById(id);
 

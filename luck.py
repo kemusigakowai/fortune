@@ -10,7 +10,8 @@ import tempfile
 
 __version__ = '1.0'
 
-N = 5
+N = 6
+MAX_ATTEMPTS = 5000
 RANKING_FILE = Path(__file__).resolve().with_name('ranking.txt')
 RANKING_BROWSER_FILE = Path(__file__).resolve().with_name('ranking-data.js')
 RANKING_HEADER = '"Ranking" "Birthday" "Fortune" "Number of Attempts"'
@@ -62,24 +63,26 @@ def calculate_attempts(birthday, generated_date):
     while True:
         generator.shuffle(values)
         iteration += 1
-        if is_sorted(values) or iteration > 600:
+        if is_sorted(values) or iteration > MAX_ATTEMPTS:
             return iteration
 
 
 def fortune_label(iteration):
     if iteration == 1:
         return 'extremely_lucky'
-    if iteration <= 7:
+    if iteration <= 37:
         return 'very_lucky'
-    if iteration <= 27:
+    if iteration <= 161:
         return 'lucky'
-    if iteration <= 109:
-        return 'normal'
-    if iteration <= 165:
+    if iteration <= 311:
+        return 'a_bit_lucky'
+    if iteration <= 755:
+        return 'ordinal'
+    if iteration <= 1157:
         return 'a_bit_unlucky'
-    if iteration <= 274:
+    if iteration <= 2154:
         return 'unlucky'
-    if iteration <= 600:
+    if iteration <= MAX_ATTEMPTS:
         return 'very_unlucky'
     return 'extremely_unlucky'
 
@@ -88,20 +91,22 @@ def fortune_messages(iteration):
     if iteration == 1:
         return ('YOU ARE EXTREMELY LUCKY !!!',
                 'You succeeded in sorting at once !!!')
-    if iteration <= 7:
+    if iteration <= 37:
         return ('You are very lucky !!',)
-    if iteration <= 27:
+    if iteration <= 161:
         return ('You are lucky !',)
-    if iteration <= 109:
-        return ('You have a normal luck.',)
-    if iteration <= 165:
+    if iteration <= 311:
+        return ('You are a bit lucky !',)
+    if iteration <= 755:
+        return ('Your fortune is Ordinal.',)
+    if iteration <= 1157:
         return ('You are a bit unlucky..',)
-    if iteration <= 274:
+    if iteration <= 2154:
         return ('You are unlucky...',)
-    if iteration <= 600:
+    if iteration <= MAX_ATTEMPTS:
         return ('You are very unlucky....',)
     return ('YOU ARE EXTREMELY UNLUCKY.....',
-            'You could not succeed in sorting in 600 attempts')
+            f'You could not succeed in sorting in {MAX_ATTEMPTS} attempts')
 
 
 def print_result(iteration, ranking=None):
@@ -231,6 +236,10 @@ def load_ranking(generated_date, ranking_file=None):
 
     if seen_birthdays != expected_birthdays:
         return None
+    # Reject cached results generated with a different sorting configuration.
+    if any(attempts != calculate_attempts(birthday, generated_date)
+           for _, birthday, _, attempts in ranking):
+        return None
     return ranking
 
 
@@ -247,7 +256,7 @@ def get_ranking(generated_date, ranking_file=None):
 def create_parser():
     parser = argparse.ArgumentParser(
         usage='$python luck.py [-h] [-r] [your_birthday] [--GMT hours]',
-        description='This program tells your fortune of today using bogo-sort (N=5).',
+        description=f'This program tells your fortune of today using bogo-sort (N={N}).',
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('birthday', nargs='?', type=interpret_birthday,
                         help=('your birthday\n'+
