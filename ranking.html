@@ -479,10 +479,11 @@
     </main>
 
     <div class="empty" id="load-empty" style="margin-top:22px">
-      <div><strong>Ranking data unavailable</strong>Run <code>luck --ranking</code> to generate <code>ranking.txt</code>.</div>
+      <div><strong>Ranking data unavailable</strong>Run <code>luck --ranking</code> to generate <code>ranking-data.js</code>.</div>
     </div>
   </div>
 
+  <script src="ranking-data.js"></script>
   <script>
     (() => {
       'use strict';
@@ -608,17 +609,6 @@
         render();
       }
 
-      async function loadRanking() {
-        try {
-          const response = await fetch('ranking.txt', { cache: 'no-store' });
-          if (!response.ok) throw new Error('HTTP ' + response.status);
-          showRanking(await response.text());
-        } catch (error) {
-          $('load-empty').innerHTML = '<div><strong>Ranking data unavailable</strong>' +
-            'Could not load <code>ranking.txt</code>: ' + escapeHtml(error.message) + '</div>';
-        }
-      }
-
       addNumberOptions('month-filter', 12);
       addNumberOptions('day-filter', 31);
 
@@ -635,7 +625,14 @@
         if (state.entries.length) render();
       });
 
-      loadRanking();
+      if (window.LUCK_RANKING_TEXT) {
+        try {
+          showRanking(window.LUCK_RANKING_TEXT);
+        } catch (error) {
+          $('load-empty').innerHTML = '<div><strong>Ranking data unavailable</strong>' +
+            escapeHtml(error.message) + '</div>';
+        }
+      }
     })();
   </script>
 </body>
