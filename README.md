@@ -68,6 +68,16 @@ Open `ranking.html` to view the ranking. Running `luck -r` updates both data
 files. The HTML loads `ranking-data.js` when opened directly as a `file://`
 page; if that file is unavailable, choose or drop `ranking.txt` into the page.
 
+Install a daily cron job with:
+
+```sh
+sh ./install_cron.sh
+```
+
+It runs `luck --ranking` at 00:00:01 each day and writes output to
+`~/.local/state/luck/ranking.log`. Because cron schedules jobs by the minute,
+the job starts at 00:00:00 and waits one second before running.
+
 ```sh
 python3 luck_examine.py
 ```
