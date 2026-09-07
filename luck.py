@@ -9,11 +9,19 @@ __version__ = '1.0'
 print('')
 
 def interpret_birthday(birthday_string):
-    i = 0
-    birthday_int = 0
-    for i in [0, 1, 2, 3]:
-        birthday_int += 10**(3-i) * int(list(birthday_string)[i])
-    return birthday_int
+    if len(birthday_string) != 4 or not birthday_string.isdigit():
+        raise argparse.ArgumentTypeError('birthday must be a four-digit MMDD value')
+
+    month = int(birthday_string[:2])
+    day = int(birthday_string[2:])
+    try:
+        # 2000 is a leap year, so February 29 remains a valid birthday.
+        datetime.date(2000, month, day)
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+            'birthday must be an existing calendar date in MMDD format')
+
+    return int(birthday_string)
 
 def interpret_time(GMT):
     t_delta = datetime.timedelta(hours=int(GMT))
@@ -27,6 +35,7 @@ parser = argparse.ArgumentParser(
     formatter_class = argparse.RawTextHelpFormatter)
 parser.add_argument('birthday', type=interpret_birthday,
                    help=('your birthday\n'+
+                         'use an existing date in four-digit MMDD format\n'+
                          'example1: 1225\n'+
                          'example2: 0903\n'))
 parser.add_argument('--GMT', type=interpret_time, default=interpret_time(9),
