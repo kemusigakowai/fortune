@@ -1130,9 +1130,7 @@
         const selected = filtered.length === 1 ? filtered[0] : null;
         const direction = state.sortOrder === 'ascending' ? 1 : -1;
         const tableEntries = [...filtered].sort((left, right) => {
-          const rankDifference = left.rank - right.rank;
-          if (rankDifference) return rankDifference * direction;
-          return left.birthday.localeCompare(right.birthday) * direction;
+          return (left.rank - right.rank) * direction;
         });
 
         $('date-badge').textContent = prettyDate(state.generatedDate);

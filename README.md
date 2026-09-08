@@ -64,7 +64,12 @@ The file starts with the generation date, followed by the ranking table:
 ```
 
 Equal attempt counts receive the same rank. The next rank includes all tied
-entries; for example, `1, 1, 2, 2, 4` becomes `1, 1, 3, 3, 5`.
+entries; for example, `1, 1, 2, 2, 4` becomes `1, 1, 3, 3, 5`. Birthdays with
+equal attempt counts are displayed in a reproducibly shuffled order for each
+day instead of chronological order. The ranking-only shuffle uses the sum of
+the digits in `YYYYMMDD`, plus `MM * 10`, `DD * 3`, and
+`floor(MM * sin(YYYY))`; it does not alter the random sequence used to calculate
+an individual birthday's attempts.
 
 Open `ranking.html` to view the ranking. Running `luck -r` updates both data
 files. The HTML loads `data/ranking-data.js` directly and provides text, month, and

@@ -3,6 +3,7 @@ import datetime
 import random as rand
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 import sys
@@ -51,6 +52,25 @@ def birthdays():
             except ValueError:
                 continue
             yield month * 100 + day
+
+
+def ranking_shuffle_seed(generated_date):
+    """Return the date-derived seed used only to order ranking calculations."""
+    date_text = f'{generated_date:08d}'
+    year = int(date_text[:4])
+    month = int(date_text[4:6])
+    day = int(date_text[6:])
+    digit_sum = sum(int(digit) for digit in date_text)
+    return (digit_sum + month * 10 + day * 3 +
+            math.floor(month * math.sin(year)))
+
+
+def shuffled_birthdays(generated_date):
+    """Return all birthdays in a reproducible date-specific random order."""
+    ordered_birthdays = list(birthdays())
+    generator = rand.Random(ranking_shuffle_seed(generated_date))
+    generator.shuffle(ordered_birthdays)
+    return ordered_birthdays
 
 
 def is_sorted(values):
@@ -122,11 +142,13 @@ def print_result(iteration, ranking=None):
 
 def build_ranking(generated_date):
     results = []
-    for birthday in birthdays():
+    for birthday in shuffled_birthdays(generated_date):
         attempts = calculate_attempts(birthday, generated_date)
         results.append((attempts, birthday, fortune_label(attempts)))
 
-    results.sort(key=lambda result: (result[0], result[1]))
+    # Python's sort is stable, so equal-attempt entries retain the shuffled
+    # calculation order instead of falling back to chronological birthdays.
+    results.sort(key=lambda result: result[0])
     ranking = []
     for index, (attempts, birthday, label) in enumerate(results, 1):
         rank = index
@@ -238,9 +260,9 @@ def load_ranking(generated_date, ranking_file=None):
 
     if seen_birthdays != expected_birthdays:
         return None
-    # Reject cached results generated with a different sorting configuration.
-    if any(attempts != calculate_attempts(birthday, generated_date)
-           for _, birthday, _, attempts in ranking):
+    # Reject cached results generated with different simulation or ordering
+    # rules. This also invalidates the former birthday-ordered tie groups.
+    if ranking != build_ranking(generated_date):
         return None
     return ranking
 
