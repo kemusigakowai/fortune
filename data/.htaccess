@@ -1,0 +1,11 @@
+# ranking-data.js is the only public asset in this directory.
+<Files "ranking-data.js">
+    Order Deny,Allow
+    Allow from all
+</Files>
+
+# ranking.txt and any other files are generated/private data.
+<FilesMatch "^(?!ranking-data\.js$).*$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>

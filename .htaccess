@@ -1,16 +1,12 @@
-# ranking.html loads ranking-data.js, so both files must remain readable.
+# ranking.html loads data/ranking-data.js, so both files must remain readable.
 # The previous Options/Require version returned HTTP 500 on the RCNP user
 # directory, so this file uses the legacy host-access directives instead.
 <Files "ranking.html">
     Order Deny,Allow
     Allow from all
 </Files>
-<Files "ranking-data.js">
-    Order Deny,Allow
-    Allow from all
-</Files>
-
-# Deny every other file in this directory.
+# Deny every other file in this directory. The ranking-data.js exception is
+# retained so the data/.htaccess allow rule can expose that asset.
 <FilesMatch "^(?!ranking\.html$|ranking-data\.js$).*$">
     Order Allow,Deny
     Deny from all

@@ -1,18 +1,18 @@
 #!/bin/sh
 set -eu
 
-repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+setup_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 luck_command=${LUCK_COMMAND:-"$HOME/.local/bin/luck"}
 state_dir=${XDG_STATE_HOME:-"$HOME/.local/state"}
 log_file="$state_dir/luck/ranking.log"
 marker='# luck daily ranking'
 
 if [ ! -x "$luck_command" ]; then
-    if [ ! -f "$repo_dir/install.sh" ]; then
+    if [ ! -f "$setup_dir/install.sh" ]; then
         printf 'luck is not installed and install.sh was not found.\n' >&2
         exit 1
     fi
-    sh "$repo_dir/install.sh"
+    sh "$setup_dir/install.sh"
 fi
 
 if [ ! -x "$luck_command" ]; then

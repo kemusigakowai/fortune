@@ -1,9 +1,9 @@
-# Generated daily ranking
-/ranking.txt
-/ranking-data.js
+# Generated daily ranking cache
+/data/ranking.txt
+/data/ranking-data.js
 
 # C++ executable
-/luck_examine
+/exam/luck_examine
 
 # Python bytecode cache
 __pycache__/

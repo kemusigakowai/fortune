@@ -1,9 +1,10 @@
 #!/bin/sh
 set -eu
 
-repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+setup_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+repo_dir=$(CDPATH= cd -- "$setup_dir/.." && pwd)
 luck_command=${LUCK_COMMAND:-"$HOME/.local/bin/luck"}
-ranking_file=${RANKING_FILE:-"$repo_dir/ranking.txt"}
+ranking_file=${RANKING_FILE:-"$repo_dir/data/ranking.txt"}
 slot_seconds=21600
 
 if [ ! -x "$luck_command" ]; then
