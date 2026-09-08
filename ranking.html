@@ -62,7 +62,8 @@
     .hero {
       position: relative;
       overflow: hidden;
-      padding: clamp(18px, 3vw, 30px);
+      --hero-padding: clamp(18px, 3vw, 30px);
+      padding: var(--hero-padding);
       border: 1px solid var(--line);
       border-radius: 22px;
       background: linear-gradient(135deg, rgba(21, 42, 70, .9), rgba(14, 24, 42, .82));
@@ -132,14 +133,14 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      align-items: center;
+      align-items: flex-start;
       margin-top: 14px;
     }
 
     .search, .filter-select {
       display: inline-flex;
       align-items: center;
-      min-height: 44px;
+      min-height: 42px;
       border: 1px solid var(--line);
       border-radius: 13px;
       background: linear-gradient(145deg, rgba(12, 25, 44, .9), rgba(7, 15, 28, .7));
@@ -147,10 +148,33 @@
     }
 
     .search {
-      flex: 1 1 280px;
       gap: 8px;
       padding: 0 13px;
       color: var(--muted);
+    }
+
+    .search-stack {
+      display: grid;
+      flex: 1 1 280px;
+      gap: var(--hero-padding);
+      min-width: 0;
+    }
+
+    .date-stack {
+      display: grid;
+      flex: 0 1 354px;
+      gap: var(--hero-padding);
+      min-width: 300px;
+    }
+
+    .date-filters {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .date-filters .filter-select {
+      width: 100%;
     }
 
     .search:focus-within {
@@ -165,6 +189,235 @@
       color: var(--ink);
       background: transparent;
       font-size: 12px;
+    }
+
+    .search input[type="search"]::-webkit-search-cancel-button {
+      display: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .search-clear {
+      display: grid;
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .search-clear:hover,
+    .search-clear:focus-visible {
+      color: var(--ink);
+      background: rgba(98, 230, 237, .12);
+      outline: 0;
+    }
+
+    .fortune-filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .fortune-filter-label {
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .fortune-buttons {
+      display: flex;
+      flex: 1 1 220px;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .fortune-break {
+      flex-basis: 100%;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .fortune-filter-button {
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(5, 12, 23, .28);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.25;
+      text-transform: capitalize;
+      transition: border-color .18s ease, color .18s ease, background .18s ease,
+        transform .18s ease;
+    }
+
+    .fortune-filter-button:hover,
+    .fortune-filter-button:focus-visible {
+      border-color: rgba(98, 230, 237, .48);
+      color: var(--ink);
+      outline: 0;
+      transform: translateY(-1px);
+    }
+
+    .fortune-filter-button.active {
+      border-color: rgba(98, 230, 237, .62);
+      color: #07131f;
+      background: var(--cyan);
+      box-shadow: 0 3px 10px rgba(98, 230, 237, .16);
+    }
+
+    .attempts-filter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 46px;
+      padding: 6px 8px 6px 11px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: linear-gradient(145deg, rgba(12, 25, 44, .9), rgba(7, 15, 28, .7));
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .attempts-filter.has-value {
+      border-color: rgba(98, 230, 237, .46);
+      background: linear-gradient(145deg, rgba(22, 48, 68, .86), rgba(13, 29, 48, .78));
+      box-shadow: 0 0 0 3px rgba(98, 230, 237, .07);
+    }
+
+    .attempts-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .operator-slider {
+      position: relative;
+      display: grid;
+      flex: 0 0 auto;
+      grid-template-columns: repeat(2, 1fr);
+      width: 76px;
+      height: 34px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--muted);
+      background: rgba(5, 12, 23, .42);
+      cursor: pointer;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .operator-slider:hover,
+    .operator-slider:focus-visible {
+      border-color: rgba(98, 230, 237, .55);
+      box-shadow: 0 0 0 3px rgba(98, 230, 237, .08);
+      outline: 0;
+    }
+
+    .operator-slider-thumb {
+      position: absolute;
+      z-index: 0;
+      top: 3px;
+      left: 3px;
+      width: 35px;
+      height: 26px;
+      border-radius: 7px;
+      background: var(--cyan);
+      box-shadow: 0 3px 9px rgba(98, 230, 237, .18);
+      transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .operator-slider.at-most .operator-slider-thumb {
+      background: var(--violet);
+      box-shadow: 0 3px 9px rgba(169, 139, 255, .18);
+      transform: translateX(35px);
+    }
+
+    .operator-choice {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1;
+      transition: color .2s ease;
+    }
+
+    .operator-slider:not(.at-most) .operator-at-least,
+    .operator-slider.at-most .operator-at-most {
+      color: #07131f;
+    }
+
+    .attempts-input {
+      flex: 1 1 72px;
+      width: 72px;
+      min-width: 0;
+      min-height: 34px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      outline: 0;
+      color: var(--ink);
+      background: rgba(5, 12, 23, .32);
+      appearance: none;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .attempts-input:focus {
+      border-color: rgba(98, 230, 237, .55);
+      box-shadow: 0 0 0 3px rgba(98, 230, 237, .08);
+    }
+
+    .attempts-input[aria-invalid="true"] {
+      color: #ffc1bb;
+    }
+
+    .attempts-input::placeholder {
+      color: var(--muted);
+      opacity: .8;
+    }
+
+    .attempts-clear {
+      display: grid;
+      flex: 0 0 auto;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .attempts-clear:hover,
+    .attempts-clear:focus-visible {
+      color: var(--ink);
+      background: rgba(98, 230, 237, .12);
+      outline: 0;
     }
 
     .filter-select {
@@ -327,6 +580,55 @@
       margin: 0;
       color: var(--muted);
       font-size: 11px;
+    }
+
+    .ranking-heading {
+      align-items: center;
+    }
+
+    .ranking-tools {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 9px;
+    }
+
+    .ranking-tools #shown-count {
+      white-space: nowrap;
+    }
+
+    .sort-control {
+      display: inline-flex;
+      gap: 2px;
+      padding: 2px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(5, 12, 23, .32);
+    }
+
+    .sort-button {
+      padding: 5px 8px;
+      border: 0;
+      border-radius: 7px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .sort-button:hover,
+    .sort-button:focus-visible {
+      color: var(--ink);
+      outline: 0;
+    }
+
+    .sort-button.active {
+      color: #07131f;
+      background: var(--cyan);
+      box-shadow: 0 3px 10px rgba(98, 230, 237, .18);
     }
 
     .podium {
@@ -526,6 +828,9 @@
       .stat-note { display: none; }
       .section-heading { align-items: end; flex-direction: row; margin-top: 12px; }
       .section-heading div p { display: none; }
+      .ranking-heading { align-items: center; }
+      .ranking-tools { gap: 5px; }
+      .sort-button { padding: 4px 6px; font-size: 9px; }
       .podium-card { min-height: 80px; padding: 10px 12px; }
       .podium-birthday { margin-top: 4px; font-size: 20px; }
       .podium-meta { display: none; }
@@ -533,8 +838,12 @@
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
-      .search { grid-column: 1 / -1; }
+      .search-stack, .date-stack { grid-column: 1 / -1; }
+      .date-stack { min-width: 0; }
       .search, .filter-select { width: 100%; }
+      .fortune-filters { display: block; }
+      .fortune-filter-label { display: block; margin-bottom: 4px; }
+      .fortune-buttons { width: 100%; }
     }
   </style>
 </head>
@@ -546,32 +855,53 @@
       <h1>Find your <em>lucky place.</em></h1>
       <p class="intro">A calm view of every birthday in today's Bogo-Sort (N=6) ranking.<span class="intro-break">Search a birthday, compare the attempts, and see where your luck landed.</span></p>
       <div class="toolbar">
-        <label class="search" aria-label="Search ranking">
-          <span>⌕</span>
-          <input id="search" type="search" placeholder="Search birthday or fortune">
-        </label>
-        <label class="filter-select">
-          <svg class="filter-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3v3m10-3v3M4.5 9.5h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <span class="filter-body">
-            <span class="filter-label">Month</span>
-            <span class="filter-value">All months</span>
-          </span>
-          <select id="month-filter" aria-label="Filter by month">
-            <option value="">All months</option>
-          </select>
-          <span class="filter-chevron" aria-hidden="true"></span>
-        </label>
-        <label class="filter-select">
-          <svg class="filter-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3v3m10-3v3M4.5 9.5h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 14h3m2 0h3m-8 3h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <span class="filter-body">
-            <span class="filter-label">Day</span>
-            <span class="filter-value">All days</span>
-          </span>
-          <select id="day-filter" aria-label="Filter by day">
-            <option value="">All days</option>
-          </select>
-          <span class="filter-chevron" aria-hidden="true"></span>
-        </label>
+        <div class="search-stack">
+          <div class="search" role="search">
+            <span aria-hidden="true">⌕</span>
+            <input id="search" type="search" aria-label="Search ranking" placeholder="Search birthday or fortune">
+            <button id="search-clear" class="search-clear" type="button" aria-label="Clear search" title="Clear search" hidden>×</button>
+          </div>
+          <div class="fortune-filters" id="fortune-filters" hidden>
+            <span class="fortune-filter-label">Fortune</span>
+            <div class="fortune-buttons" id="fortune-buttons" role="group" aria-label="Filter by fortune; multiple selections use OR"></div>
+          </div>
+        </div>
+        <div class="date-stack">
+          <div class="date-filters">
+            <label class="filter-select">
+              <svg class="filter-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3v3m10-3v3M4.5 9.5h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <span class="filter-body">
+                <span class="filter-label">Month</span>
+                <span class="filter-value">All months</span>
+              </span>
+              <select id="month-filter" aria-label="Filter by month">
+                <option value="">All months</option>
+              </select>
+              <span class="filter-chevron" aria-hidden="true"></span>
+            </label>
+            <label class="filter-select">
+              <svg class="filter-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3v3m10-3v3M4.5 9.5h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 14h3m2 0h3m-8 3h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <span class="filter-body">
+                <span class="filter-label">Day</span>
+                <span class="filter-value">All days</span>
+              </span>
+              <select id="day-filter" aria-label="Filter by day">
+                <option value="">All days</option>
+              </select>
+              <span class="filter-chevron" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="attempts-filter" id="attempts-filter" role="group" aria-label="Filter by number of attempts">
+            <span class="attempts-label">Attempts</span>
+            <button id="attempts-operator" class="operator-slider" type="button" aria-label="At least" aria-pressed="true" title="At least">
+              <span class="operator-slider-thumb" aria-hidden="true"></span>
+              <span class="operator-choice operator-at-least" aria-hidden="true">≥</span>
+              <span class="operator-choice operator-at-most" aria-hidden="true">≤</span>
+            </button>
+            <input id="attempts-value" class="attempts-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Number" aria-label="Number of attempts">
+            <button id="attempts-clear" class="attempts-clear" type="button" aria-label="Clear attempts filter" title="Clear attempts filter" hidden>×</button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -580,17 +910,23 @@
         <article class="stat"><span class="stat-label">Entries</span><strong class="stat-value" id="total">—</strong><span class="stat-note">valid birthdays</span></article>
         <article class="stat"><span class="stat-label">Best day</span><strong class="stat-value" id="best">—</strong><span class="stat-note" id="best-note">fewest attempts</span></article>
         <article class="stat"><span class="stat-label">Average</span><strong class="stat-value" id="average">—</strong><span class="stat-note">attempts across the field</span></article>
-        <article class="stat"><span class="stat-label">Your rank</span><strong class="stat-value" id="selected-rank">—</strong><span class="stat-note" id="selected-note">type a birthday above</span></article>
+        <article class="stat"><span class="stat-label">Your rank</span><strong class="stat-value" id="selected-rank">—</strong><span class="stat-note" id="selected-note"></span></article>
       </section>
 
       <div class="section-heading">
         <div><h2>Lucky podium</h2><p>The smallest number of attempts takes the highest place.</p></div>
-        <p id="shown-count"></p>
       </div>
       <section class="podium" id="podium" aria-label="Top three ranking entries"></section>
 
-      <div class="section-heading">
-        <div><h2>Full ranking</h2><p>Equal attempt counts keep the same rank.</p></div>
+      <div class="section-heading ranking-heading">
+        <div><h2>Ranking</h2></div>
+        <div class="ranking-tools">
+          <p id="shown-count"></p>
+          <div class="sort-control" role="group" aria-label="Sort ranking table">
+            <button id="sort-ascending" class="sort-button active" type="button" aria-pressed="true">Ascending</button>
+            <button id="sort-descending" class="sort-button" type="button" aria-pressed="false">Descending</button>
+          </div>
+        </div>
       </div>
       <section class="panel table-panel">
         <div class="table-wrap">
@@ -599,7 +935,7 @@
             <tbody id="rows"></tbody>
           </table>
         </div>
-        <div class="empty" id="empty" hidden><div><strong>No matching birthdays</strong>Try another birthday, fortune label, month, or day.</div></div>
+        <div class="empty" id="empty" hidden><div><strong>No matching birthdays</strong>Try another birthday, fortune label, month, day, or attempt count.</div></div>
       </section>
     </main>
 
@@ -614,7 +950,15 @@
       'use strict';
 
       const ATTEMPTS_SCALE_MAX = 5000;
-      const state = { entries: [], generatedDate: '', query: '', month: '', day: '' };
+      const FORTUNE_LABELS = [
+        'extremely_lucky', 'very_lucky', 'lucky', 'a_bit_lucky', 'ordinal',
+        'a_bit_unlucky', 'unlucky', 'very_unlucky', 'extremely_unlucky'
+      ];
+      const state = {
+        entries: [], generatedDate: '', query: '', month: '', day: '', fortunes: [],
+        sortOrder: 'ascending', attemptsOperator: 'atLeast', attemptsValue: null
+      };
+      let searchComposing = false;
       const $ = (id) => document.getElementById(id);
 
       function escapeHtml(value) {
@@ -664,6 +1008,11 @@
         return value.replace(/_/g, ' ');
       }
 
+      function normalizeFullWidthDigits(value) {
+        return value.replace(/[０-９]/g, (digit) =>
+          String.fromCharCode(digit.charCodeAt(0) - 0xFEE0));
+      }
+
       function formatAttempts(value, capitalized = false) {
         const unit = value === 1 ? 'attempt' : 'attempts';
         return value + ' ' + (capitalized ? unit[0].toUpperCase() + unit.slice(1) : unit);
@@ -685,13 +1034,92 @@
         control.querySelector('.filter-value').textContent = select.selectedOptions[0].textContent;
       }
 
+      function updateSearchClear() {
+        $('search-clear').hidden = !$('search').value;
+      }
+
+      function updateSearchQuery(commit = false) {
+        const input = $('search');
+        const normalized = normalizeFullWidthDigits(input.value);
+        state.query = normalized.trim();
+
+        if ((commit || !searchComposing) && normalized !== input.value) {
+          const selectionStart = input.selectionStart;
+          const selectionEnd = input.selectionEnd;
+          input.value = normalized;
+          if (typeof input.setSelectionRange === 'function' && selectionStart !== null) {
+            input.setSelectionRange(selectionStart, selectionEnd);
+          }
+        }
+
+        updateSearchClear();
+        if (state.entries.length) render();
+      }
+
+      function updateSortButtons() {
+        const ascending = state.sortOrder === 'ascending';
+        $('sort-ascending').classList.toggle('active', ascending);
+        $('sort-ascending').setAttribute('aria-pressed', String(ascending));
+        $('sort-descending').classList.toggle('active', !ascending);
+        $('sort-descending').setAttribute('aria-pressed', String(!ascending));
+      }
+
+      function updateFortuneButtons() {
+        $('fortune-buttons').querySelectorAll('[data-fortune]').forEach((button) => {
+          const selected = state.fortunes.includes(button.dataset.fortune);
+          button.classList.toggle('active', selected);
+          button.setAttribute('aria-pressed', String(selected));
+        });
+      }
+
+      function renderFortuneButtons() {
+        const observedFortunes = [...new Set(state.entries.map((entry) => entry.fortune))];
+        const fortunes = [
+          ...FORTUNE_LABELS,
+          ...observedFortunes.filter((fortune) => !FORTUNE_LABELS.includes(fortune))
+        ];
+        state.fortunes = state.fortunes.filter((fortune) => fortunes.includes(fortune));
+        $('fortune-buttons').innerHTML = fortunes.map((fortune, index) => `
+          <button class="fortune-filter-button" type="button" data-fortune="${escapeHtml(fortune)}" aria-pressed="false">
+            ${escapeHtml(prettyFortune(fortune))}
+          </button>${index === 3 ? '<span class="fortune-break" aria-hidden="true"></span>' : ''}`).join('');
+        $('fortune-filters').hidden = fortunes.length === 0;
+        updateFortuneButtons();
+      }
+
+      function updateAttemptsControl() {
+        const input = $('attempts-value');
+        const hasInput = input.value !== '';
+        const valid = Number.isInteger(state.attemptsValue) &&
+          state.attemptsValue >= 1 && state.attemptsValue <= 5001;
+        const atLeast = state.attemptsOperator === 'atLeast';
+        $('attempts-filter').classList.toggle('has-value', valid);
+        $('attempts-operator').classList.toggle('at-most', !atLeast);
+        $('attempts-operator').setAttribute('aria-label', atLeast ? 'At least' : 'At most');
+        $('attempts-operator').setAttribute('aria-pressed', String(atLeast));
+        $('attempts-operator').setAttribute('title', atLeast ? 'At least' : 'At most');
+        input.setAttribute('aria-invalid', String(hasInput && !valid));
+        $('attempts-clear').hidden = !hasInput;
+      }
+
+      function readAttemptsValue(value) {
+        if (!/^\d+$/.test(value)) return null;
+        const number = Number(value);
+        return Number.isInteger(number) && number >= 1 && number <= 5001 ? number : null;
+      }
+
       function matches(entry) {
         const normalized = state.query.replace(/\s|\//g, '').toLowerCase();
         const matchesQuery = !state.query || entry.birthday.includes(normalized) ||
           entry.fortune.replace(/_/g, ' ').toLowerCase().includes(state.query.toLowerCase());
         const matchesMonth = !state.month || entry.birthday.slice(0, 2) === state.month;
         const matchesDay = !state.day || entry.birthday.slice(2) === state.day;
-        return matchesQuery && matchesMonth && matchesDay;
+        const matchesFortune = !state.fortunes.length || state.fortunes.includes(entry.fortune);
+        const matchesAttempts = state.attemptsValue === null ||
+          (state.attemptsOperator === 'atLeast'
+            ? entry.attempts >= state.attemptsValue
+            : entry.attempts <= state.attemptsValue);
+        return matchesQuery && matchesMonth && matchesDay && matchesFortune && matchesAttempts;
       }
 
       function render() {
@@ -700,6 +1128,12 @@
         const best = Math.min(...entries.map((entry) => entry.attempts));
         const average = Math.round(entries.reduce((sum, entry) => sum + entry.attempts, 0) / entries.length);
         const selected = filtered.length === 1 ? filtered[0] : null;
+        const direction = state.sortOrder === 'ascending' ? 1 : -1;
+        const tableEntries = [...filtered].sort((left, right) => {
+          const rankDifference = left.rank - right.rank;
+          if (rankDifference) return rankDifference * direction;
+          return left.birthday.localeCompare(right.birthday) * direction;
+        });
 
         $('date-badge').textContent = prettyDate(state.generatedDate);
         $('total').textContent = entries.length;
@@ -709,7 +1143,7 @@
         $('selected-rank').textContent = selected ? '#' + selected.rank : '—';
         $('selected-note').textContent = selected
           ? prettyBirthday(selected.birthday) + ' · ' + prettyFortune(selected.fortune)
-          : 'narrow the results to one birthday';
+          : '';
         $('shown-count').textContent = 'Showing ' + filtered.length + ' of ' + entries.length;
 
         $('podium').innerHTML = entries.slice(0, 3).map((entry, index) => `
@@ -719,7 +1153,7 @@
             <span class="podium-meta">${escapeHtml(prettyFortune(entry.fortune))} · ${formatAttempts(entry.attempts)}</span>
           </article>`).join('');
 
-        $('rows').innerHTML = filtered.map((entry) => {
+        $('rows').innerHTML = tableEntries.map((entry) => {
           const isSelected = selected && selected.birthday === entry.birthday;
           const fortuneClass = entry.fortune.replace(/_/g, '-');
           const width = Math.min(100,
@@ -738,6 +1172,7 @@
         const parsed = parseRanking(text);
         state.generatedDate = parsed.generatedDate;
         state.entries = parsed.entries;
+        renderFortuneButtons();
         $('content').hidden = false;
         $('load-empty').hidden = true;
         render();
@@ -746,8 +1181,54 @@
       addNumberOptions('month-filter', 12);
       addNumberOptions('day-filter', 31);
 
-      $('search').addEventListener('input', (event) => {
-        state.query = event.target.value.trim();
+      $('search').addEventListener('compositionstart', () => {
+        searchComposing = true;
+      });
+      $('search').addEventListener('compositionend', () => {
+        searchComposing = false;
+        updateSearchQuery(true);
+      });
+      $('search').addEventListener('input', () => {
+        updateSearchQuery();
+      });
+      $('search-clear').addEventListener('click', () => {
+        $('search').value = '';
+        state.query = '';
+        searchComposing = false;
+        updateSearchClear();
+        $('search').focus();
+        if (state.entries.length) render();
+      });
+      $('fortune-buttons').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-fortune]');
+        if (!button) return;
+
+        const fortune = button.dataset.fortune;
+        if (state.fortunes.includes(fortune)) {
+          state.fortunes = state.fortunes.filter((value) => value !== fortune);
+        } else {
+          state.fortunes = [...state.fortunes, fortune];
+        }
+        updateFortuneButtons();
+        if (state.entries.length) render();
+      });
+      $('attempts-operator').addEventListener('click', () => {
+        state.attemptsOperator = state.attemptsOperator === 'atLeast' ? 'atMost' : 'atLeast';
+        updateAttemptsControl();
+        if (state.entries.length) render();
+      });
+      $('attempts-value').addEventListener('input', (event) => {
+        const normalized = normalizeFullWidthDigits(event.target.value);
+        if (normalized !== event.target.value) event.target.value = normalized;
+        state.attemptsValue = readAttemptsValue(normalized);
+        updateAttemptsControl();
+        if (state.entries.length) render();
+      });
+      $('attempts-clear').addEventListener('click', () => {
+        $('attempts-value').value = '';
+        state.attemptsValue = null;
+        updateAttemptsControl();
+        $('attempts-value').focus();
         if (state.entries.length) render();
       });
       $('month-filter').addEventListener('change', (event) => {
@@ -760,6 +1241,20 @@
         updateFilterControl(event.target, state.day);
         if (state.entries.length) render();
       });
+      $('sort-ascending').addEventListener('click', () => {
+        state.sortOrder = 'ascending';
+        updateSortButtons();
+        if (state.entries.length) render();
+      });
+      $('sort-descending').addEventListener('click', () => {
+        state.sortOrder = 'descending';
+        updateSortButtons();
+        if (state.entries.length) render();
+      });
+
+      updateSearchClear();
+      updateSortButtons();
+      updateAttemptsControl();
 
       if (window.LUCK_RANKING_TEXT) {
         try {
