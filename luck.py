@@ -12,8 +12,9 @@ __version__ = '1.0'
 
 N = 6
 MAX_ATTEMPTS = 5000
-RANKING_FILE = Path(__file__).resolve().with_name('ranking.txt')
-RANKING_BROWSER_FILE = Path(__file__).resolve().with_name('ranking-data.js')
+SCRIPT_DIR = Path(__file__).resolve().parent
+RANKING_FILE = SCRIPT_DIR / 'ranking.txt'
+RANKING_BROWSER_FILE = SCRIPT_DIR / 'ranking-data.js'
 RANKING_HEADER = '"Ranking" "Birthday" "Fortune" "Number of Attempts"'
 RANKING_YEAR = 2000
 

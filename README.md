@@ -44,10 +44,12 @@ Create or display today's ranking for all 366 birthdays with `-r` or
 luck -r
 ```
 
-The ranking is saved in `ranking.txt`, and `ranking-data.js` is generated for
-the HTML viewer. When an existing ranking is loaded, its first line is treated
-as informational and is not validated. To display the normal result and the
-selected birthday's rank without printing the full table, provide the birthday:
+The ranking is saved as `ranking.txt` next to `luck.py`, and `ranking-data.js`
+is generated in the same directory for the HTML viewer. These locations do not
+depend on the directory from which the `luck` command is run. An existing
+ranking is reused only when its generation date and contents are valid. To
+display the normal result and the selected birthday's rank without printing the
+full table, provide the birthday:
 
 ```sh
 luck 0928 -r
