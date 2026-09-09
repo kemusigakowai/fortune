@@ -1053,7 +1053,63 @@
         }
 
         updateSearchClear();
+        syncFiltersToUrl();
         if (state.entries.length) render();
+      }
+
+      function readDateFilter(value, maximum) {
+        if (!/^\d{1,2}$/.test(value)) return '';
+        const number = Number(value);
+        return number >= 1 && number <= maximum
+          ? String(number).padStart(2, '0')
+          : '';
+      }
+
+      function restoreFiltersFromUrl() {
+        const parameters = new URLSearchParams(window.location.search);
+        state.query = normalizeFullWidthDigits(parameters.get('search') || '').trim();
+        state.month = readDateFilter(parameters.get('month') || '', 12);
+        state.day = readDateFilter(parameters.get('day') || '', 31);
+        state.fortunes = [...new Set((parameters.get('fortune') || '')
+          .split(',').filter((fortune) => FORTUNE_LABELS.includes(fortune)))];
+
+        const attemptsText = normalizeFullWidthDigits(parameters.get('attempts') || '');
+        state.attemptsValue = readAttemptsValue(attemptsText);
+        state.attemptsOperator = state.attemptsValue !== null &&
+          parameters.get('operator') === 'atMost' ? 'atMost' : 'atLeast';
+
+        $('search').value = state.query;
+        $('month-filter').value = state.month;
+        $('day-filter').value = state.day;
+        $('attempts-value').value = state.attemptsValue === null
+          ? ''
+          : String(state.attemptsValue);
+        updateSearchClear();
+        updateFilterControl($('month-filter'), state.month);
+        updateFilterControl($('day-filter'), state.day);
+        updateAttemptsControl();
+      }
+
+      function syncFiltersToUrl() {
+        const url = new URL(window.location.href);
+        const parameters = url.searchParams;
+        ['search', 'month', 'day', 'fortune', 'attempts', 'operator']
+          .forEach((name) => parameters.delete(name));
+
+        if (state.query) parameters.set('search', state.query);
+        if (state.month) parameters.set('month', state.month);
+        if (state.day) parameters.set('day', state.day);
+        if (state.fortunes.length) parameters.set('fortune', state.fortunes.join(','));
+        if (state.attemptsValue !== null) {
+          parameters.set('attempts', String(state.attemptsValue));
+          parameters.set('operator', state.attemptsOperator);
+        }
+
+        try {
+          window.history.replaceState(null, '', url.toString());
+        } catch (error) {
+          // Some browsers restrict history updates for pages opened as local files.
+        }
       }
 
       function updateSortButtons() {
@@ -1178,6 +1234,8 @@
 
       addNumberOptions('month-filter', 12);
       addNumberOptions('day-filter', 31);
+      restoreFiltersFromUrl();
+      syncFiltersToUrl();
 
       $('search').addEventListener('compositionstart', () => {
         searchComposing = true;
@@ -1194,6 +1252,7 @@
         state.query = '';
         searchComposing = false;
         updateSearchClear();
+        syncFiltersToUrl();
         $('search').focus();
         if (state.entries.length) render();
       });
@@ -1208,11 +1267,13 @@
           state.fortunes = [...state.fortunes, fortune];
         }
         updateFortuneButtons();
+        syncFiltersToUrl();
         if (state.entries.length) render();
       });
       $('attempts-operator').addEventListener('click', () => {
         state.attemptsOperator = state.attemptsOperator === 'atLeast' ? 'atMost' : 'atLeast';
         updateAttemptsControl();
+        syncFiltersToUrl();
         if (state.entries.length) render();
       });
       $('attempts-value').addEventListener('input', (event) => {
@@ -1220,23 +1281,27 @@
         if (normalized !== event.target.value) event.target.value = normalized;
         state.attemptsValue = readAttemptsValue(normalized);
         updateAttemptsControl();
+        syncFiltersToUrl();
         if (state.entries.length) render();
       });
       $('attempts-clear').addEventListener('click', () => {
         $('attempts-value').value = '';
         state.attemptsValue = null;
         updateAttemptsControl();
+        syncFiltersToUrl();
         $('attempts-value').focus();
         if (state.entries.length) render();
       });
       $('month-filter').addEventListener('change', (event) => {
         state.month = event.target.value;
         updateFilterControl(event.target, state.month);
+        syncFiltersToUrl();
         if (state.entries.length) render();
       });
       $('day-filter').addEventListener('change', (event) => {
         state.day = event.target.value;
         updateFilterControl(event.target, state.day);
+        syncFiltersToUrl();
         if (state.entries.length) render();
       });
       $('sort-ascending').addEventListener('click', () => {
