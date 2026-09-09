@@ -1,10 +1,26 @@
 Requirements
 
 - Python 3.6.8
-- pip 21.3.1
-- numpy 1.19.5
-- argparse 1.1
-- matplotlib 3.3.4
+- Runtime dependencies: `setup/requirements.txt`
+- Examination dependencies: `setup/requirements-exam.txt`
+
+`argparse` is included in the Python standard library and does not need to be
+installed separately. The listed package versions are the versions used by
+this project.
+
+Create a virtual environment and install the runtime dependency with:
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r setup/requirements.txt
+```
+
+To run the Python examination script, install its additional dependencies:
+
+```sh
+python3 -m pip install -r setup/requirements-exam.txt
+```
 
 Usage
 
@@ -104,10 +120,18 @@ and 18:00:01, and runs `luck --ranking` only when the date differs from the
 previous execution. Reattach with `tmux attach -t luck-ranking`.
 
 ```sh
-(cd exam && python3 luck_examine.py)
+make -C exam
+make -C exam run
 ```
 
-This shows bogo-sort data written in `exam/exam_data.txt`.
+`make -C exam` builds the C++ examination program,
+`make -C exam run` runs it, and both write the C++ results to
+`exam/exam_data.txt` and `exam/exam_plot.svg`. To run the Python examination
+script instead, use:
+
+```sh
+make -C exam python
+```
 
 For detailed usage of `luck.py`, run:
 

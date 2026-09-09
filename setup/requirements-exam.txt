@@ -1,0 +1,3 @@
+# Dependencies for the Python examination script.
+-r requirements.txt
+matplotlib==3.3.4
