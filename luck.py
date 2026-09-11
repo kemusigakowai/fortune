@@ -79,7 +79,13 @@ def is_sorted(values):
 
 def calculate_attempts(birthday, generated_date):
     values = np.arange(N)
-    generator = rand.Random(birthday * generated_date)
+    pair_seed = birthday * 100_000_000 + generated_date
+    seed_generator = rand.Random(pair_seed)
+    jitter = int(
+        np.round(2 * math.sin(seed_generator.randint(1, 100))) +
+        np.round(2 * math.cos(seed_generator.randint(1, 100)))
+    )
+    generator = rand.Random(pair_seed * 10 + 5 + jitter)
     iteration = 0
 
     while True:
